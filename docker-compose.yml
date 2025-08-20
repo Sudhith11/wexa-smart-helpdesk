@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+  mongo:
+    image: mongo:5
+    container_name: wexa-mongo
+    ports: ["27017:27017"]
+    volumes: [mongo_data:/data/db]
+
+  backend:
+    build: ./backend
+    container_name: wexa-backend
+    environment:
+      - PORT=8080
+      - MONGO_URI=mongodb://mongo:27017/helpdesk
+      - JWT_SECRET=change-me
+      - STUB_MODE=true
+      - AUTO_CLOSE_ENABLED=true
+      - CONFIDENCE_THRESHOLD=0.78
+    ports: ["8080:8080"]
+    depends_on: [mongo]
+
+  frontend:
+    build: ./frontend
+    container_name: wexa-frontend
+    environment:
+      - VITE_API_URL=http://localhost:8080/api
+    ports: ["3000:80"]
+    depends_on: [backend]
+
+volumes:
+  mongo_data:
