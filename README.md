@@ -156,9 +156,7 @@ See the full flow in the demo video:
 - Full audit trail visible in ticket detail.
 - App running in the cloud.
 
-**Deployed app:** 
-Frontend url: https://wexa-smart-helpdesk.vercel.app/
-Backend url: https://wexa-smart-helpdesk.onrender.com/
+**Deployed app:** https://wexa-smart-helpdesk.vercel.app/
 **Demo video:** [YOUR_VIDEO_LINK]  
 
 ***
