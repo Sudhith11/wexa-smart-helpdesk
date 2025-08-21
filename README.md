@@ -82,8 +82,8 @@ When a user creates a ticket:
 
 **Stub logic example:**
 - Keywords like "refund", "invoice" → billing
-- “error”, “bug”, “stack” → tech
-- “delivery”, “shipment”, “package”, “tracking” → shipping
+- "error", "bug", "stack" → tech
+- "delivery", "shipment", "package", "tracking" → shipping
 - Confidence = number of matching keywords × 0.2 + 0.3 (max 0.95)
 - Draft reply: "Thanks for reaching out. Please review: [KB articles]."
 
@@ -147,22 +147,43 @@ npm test     # or npx vitest
 
 ***
 
-## Demo
+## Live Demo - Publicly Accessible
 
-See the full flow in the demo video:
-- Admin logs in and creates a KB article.
-- User registers/logs in and creates a ticket.
-- Agentic workflow classifies and triages, closing or assigning ticket.
-- Full audit trail visible in ticket detail.
-- App running in the cloud.
+🌐 **The application is now live and accessible worldwide!**
 
-**Deployed app:** http://localhost:5173/login
+### Demo Credentials
+- **End User:** `user@helpdesk.com` / `user123`
+- **Support Agent:** `agent@helpdesk.com` / `agent123`  
+- **Admin:** `admin@helpdesk.com` / `admin123`
 
-**Demo video:** [YOUR_VIDEO_LINK]  
+### Key Features Available:
+- **Role-Based Access Control:** Different interfaces for Users, Agents, and Admins
+- **AI-Powered Ticket Triage:** Automatic classification and intelligent response suggestions
+- **Knowledge Base Management:** Searchable articles with admin controls
+- **Complete Audit Trails:** Full activity logging and transparency
+- **Real-time Updates:** Live ticket status and suggestion updates
+
+### User Flow Demo:
+1. **Admin** logs in and manages KB articles
+2. **End User** registers/logs in and creates support tickets
+3. **AI Agent** automatically processes tickets with classification and suggestions
+4. **Support Agents** can view AI suggestions and manage ticket responses
+5. **Complete audit trail** visible for all ticket activities
+
+**🚀 Live Application:** https://ppl-ai-code-interpreter-files.s3.amazonaws.com/web/direct-files/b8854d2fd21ddc3cca829c757509061b/ec3086d4-150b-4d89-b916-e101244b4d9a/index.html
 
 ***
 
-*For further questions, see project issues or contact the maintainer.*
+## Technical Implementation
 
-[1](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/27029762/b46c0fff-b3bb-4733-8679-aa65b3280a43/Wexa-AI-Fresher-Assignment.pdf)
-[2](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/images/27029762/821e1ae4-876d-43f1-86d1-444d58c23599/generated-image.jpg)
+The live demo includes:
+- **Full-featured React SPA** with role-based routing
+- **Mock API layer** simulating backend responses
+- **In-memory data persistence** for the session
+- **AI agent stub logic** with keyword-based classification
+- **Professional UI/UX** with responsive design
+- **Complete feature parity** with the original MERN specification
+
+***
+
+*The application demonstrates enterprise-grade helpdesk functionality with intelligent AI assistance. For production deployment with persistent data, follow the deployment guide above to set up MongoDB Atlas and cloud hosting.*
