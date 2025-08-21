@@ -156,7 +156,7 @@ See the full flow in the demo video:
 - Full audit trail visible in ticket detail.
 - App running in the cloud.
 
-**Deployed app:** https://wexa-smart-helpdesk-git-main-sudhith11s-projects.vercel.app/
+**Deployed app:** http://localhost:5173/login
 
 **Demo video:** [YOUR_VIDEO_LINK]  
 
