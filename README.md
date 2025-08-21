@@ -8,6 +8,8 @@ Wexa Smart Helpdesk is a full-stack MERN web application with agentic triage. Us
 
 ## Architecture
 
+![Architecture Diagram](docs/architecture.png)
+
 - **Frontend:** Vite + React + React Router + Zustand/Redux
   - Role-based UI: End User, Support Agent, Admin
   - Pages: Login/Register, KB List+Editor (Admin), Ticket List, Ticket Detail (Conversation, Agent Suggestion, Audit Log Timeline), Settings
@@ -24,8 +26,6 @@ Wexa Smart Helpdesk is a full-stack MERN web application with agentic triage. Us
 - **DevOps:** Docker Compose for full stack spin-up; seed script for demo data; clear environment separation; health and readiness endpoints
 
 - **Observability:** Structured logs with traceId/ticketId; audit log for every agentic step
-
-![Architecture Diagram](docs/architecture.png)
 
 ### Environment Variables (`.env` example)
 
