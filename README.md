@@ -175,14 +175,9 @@ npm test     # or npx vitest
 ***
 
 ## Technical Implementation
+## Demo
 
-The live demo includes:
-- **Full-featured React SPA** with role-based routing
-- **Mock API layer** simulating backend responses
-- **In-memory data persistence** for the session
-- **AI agent stub logic** with keyword-based classification
-- **Professional UI/UX** with responsive design
-- **Complete feature parity** with the original MERN specification
+🎥 [Watch Demo](https://drive.google.com/file/d/1snFjoG4QBoE7cwxK7DqtMkLshXMfT8YP/view?usp=drive_link)
 
 ***
 
