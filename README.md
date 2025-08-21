@@ -175,8 +175,7 @@ npm test     # or npx vitest
 ***
 
 ## Technical Implementation
-## Demo
-
+**Demo**
 🎥 [Watch Demo](https://drive.google.com/file/d/1snFjoG4QBoE7cwxK7DqtMkLshXMfT8YP/view?usp=drive_link)
 
 ***
