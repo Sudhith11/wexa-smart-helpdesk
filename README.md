@@ -25,7 +25,7 @@ Wexa Smart Helpdesk is a full-stack MERN web application with agentic triage. Us
 
 - **Observability:** Structured logs with traceId/ticketId; audit log for every agentic step
 
-![Architecture Diagram](docs/architecture.png)
+![Architecture Diagram]("C:\Users\SUDHITH\wexa-smart-helpdesk\docs\architecture.png")
 
 ### Environment Variables (`.env` example)
 
