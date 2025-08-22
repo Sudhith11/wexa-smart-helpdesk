@@ -10,12 +10,10 @@ connectDB();
 
 app.use(helmet());
 app.use(cors({
-  origin: [
-    'https://wexa-smart-helpdesk-9270yxu-sudhith11s-projects.vercel.app', // ← Update this
-    'http://localhost:3000'
-  ],
+  origin: '*',
   credentials: true
 }));
+
 
 
 app.use(morgan('combined'));
