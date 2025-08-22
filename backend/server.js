@@ -9,7 +9,14 @@ const app = express();
 connectDB();
 
 app.use(helmet());
-app.use(cors());
+app.use(cors({
+  origin: [
+    'https://wexa-smart-helpdesk-9270yxu-sudhith11s-projects.vercel.app',
+    'http://localhost:3000'
+  ],
+  credentials: true
+}));
+
 app.use(morgan('combined'));
 app.use(express.json());
 
