@@ -1,11 +1,16 @@
 const mongoose = require('mongoose');
+
 const ticketSchema = new mongoose.Schema({
-  title: {type:String, required:true},
-  description: {type:String, required:true},
-  category: {type:String, enum:['billing','tech','shipping','other'], default:'other'},
-  status: {type:String, enum:['open','triaged','waiting_human','resolved','closed'], default:'open'},
-  createdBy: {type: mongoose.Schema.Types.ObjectId, ref:'User', required:true},
-  assignee: {type: mongoose.Schema.Types.ObjectId, ref:'User'},
-  agentSuggestionId: {type: mongoose.Schema.Types.ObjectId, ref:'AgentSuggestion'}
-},{timestamps:true});
+  title: { type: String, required: true },
+  description: { type: String, required: true },
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  status: {
+    type: String,
+    enum: ['new', 'waiting_human', 'resolved'],
+    default: 'new'
+  },
+  suggestions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'AgentSuggestion' }],
+  auditLogs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'AuditLog' }]
+}, { timestamps: true });
+
 module.exports = mongoose.model('Ticket', ticketSchema);

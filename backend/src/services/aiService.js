@@ -21,11 +21,11 @@ class AIService {
     return {predictedCategory:cat, confidence};
   }
 
-  async draft(text, articles){
-    const lines = (articles||[]).map((a,i)=> `${i+1}. ${a.title}`);
+  async draft(text, KBItems){
+    const lines = (KBItems||[]).map((a,i)=> `${i+1}. ${a.title}`);
     return {
       draftReply: `Thanks for reaching out. These may help:\n\n${lines.join('\n')}\n\nIf this resolves your issue, we'll close the ticket.`,
-      citations: (articles||[]).map(a=> String(a._id))
+      citations: (KBItems||[]).map(a=> String(a._id))
     };
   }
 }

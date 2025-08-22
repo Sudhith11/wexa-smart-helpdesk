@@ -1,102 +1,88 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import api from '../lib/api';
-import { Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { useAuth } from '../store/authStore';
+import { Link } from 'react-router-dom';
+import { formatDistanceToNow } from 'date-fns';
 
 export default function Tickets() {
-  const { logout } = useAuth();
+  const { token } = useAuth();
   const [tickets, setTickets] = useState([]);
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-
-  const loadTickets = async () => {
-    try {
-      const { data } = await api.get('/tickets?mine=true');
-      setTickets(data);
-    } catch (err) {
-      setError(err.message || 'Failed to load tickets');
-    }
-  };
+  const [loading, setLoading] = useState(true);
+  const [newTicket, setNewTicket] = useState({ title: '', description: '' });
 
   useEffect(() => {
-    loadTickets();
+    fetchTickets();
   }, []);
 
-  const createTicket = async (e) => {
-    e.preventDefault();
-    setError('');
+  const fetchTickets = async () => {
     setLoading(true);
     try {
-      await api.post('/tickets', { title, description });
-      setTitle('');
-      setDescription('');
-      setTimeout(loadTickets, 900);
-    } catch (err) {
-      setError(err.message || 'Failed to create ticket');
+      const { data } = await api.get('/tickets');
+      setTickets(data);
+    } catch {
+      toast.error('Failed to load tickets');
     } finally {
       setLoading(false);
     }
   };
 
+  const createTicket = async () => {
+    if (!newTicket.title || !newTicket.description) {
+      toast.error('Title and description are required');
+      return;
+    }
+    try {
+      await api.post('/tickets', newTicket);
+      toast.success('Ticket created');
+      setNewTicket({ title: '', description: '' });
+      fetchTickets();
+    } catch {
+      toast.error('Failed to create ticket');
+    }
+  };
+
   return (
-    <div className="p-4 max-w-2xl mx-auto">
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-xl font-semibold">My Tickets</h1>
+    <div className="p-4">
+      <h1 className="text-2xl font-bold mb-4">My Tickets</h1>
+      <div className="space-y-4 mb-6">
+        <input
+          type="text"
+          placeholder="Title"
+          value={newTicket.title}
+          onChange={e => setNewTicket(prev => ({ ...prev, title: e.target.value }))}
+          className="border p-2 rounded w-full"
+        />
+        <textarea
+          placeholder="Description"
+          value={newTicket.description}
+          onChange={e => setNewTicket(prev => ({ ...prev, description: e.target.value }))}
+          className="border p-2 rounded w-full"
+        />
         <button
-          onClick={() => {
-            logout();
-            window.location.href = '/login';
-          }}
-          className="text-red-600"
+          onClick={createTicket}
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
         >
-          Logout
+          Create
         </button>
       </div>
 
-      {error && <div className="text-red-600 mb-3">{error}</div>}
-
-      <form onSubmit={createTicket} className="flex gap-2 mb-4">
-        <input
-          className="border p-2 flex-1"
-          placeholder="Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-        <input
-          className="border p-2 flex-1"
-          placeholder="Description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-        <button
-          type="submit"
-          disabled={loading}
-          className="bg-blue-600 text-white px-3"
-        >
-          {loading ? 'Creating...' : 'Create'}
-        </button>
-      </form>
-
-      <ul className="space-y-2">
-        {tickets.map((t) => (
-          <li
-            key={t._id}
-            className="border p-2 flex justify-between items-center"
-          >
-            <div>
-              <div className="font-semibold">{t.title}</div>
-              <div className="text-sm text-gray-600">
-                {t.status} • {t.category}
-              </div>
-            </div>
-            <Link className="text-blue-600" to={`/tickets/${t._id}`}>
-              Open
-            </Link>
-          </li>
-        ))}
-      </ul>
+      {loading ? (
+        <div>Loading tickets...</div>
+      ) : (
+        <ul className="space-y-4">
+          {tickets.map(ticket => (
+            <li key={ticket._id} className="p-4 border rounded hover:bg-gray-50">
+              <Link to={`/tickets/${ticket._id}`}>
+                <h2 className="text-lg font-semibold">{ticket.title}</h2>
+              </Link>
+              <p className="text-sm text-gray-600">
+                {formatDistanceToNow(new Date(ticket.createdAt), { addSuffix: true })}
+              </p>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

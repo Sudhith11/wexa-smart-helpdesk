@@ -21,17 +21,17 @@ exports.processTicket = async (ticketId)=>{
   await log(ticketId, traceId, 'system', 'AGENT_CLASSIFIED', cls);
 
   // Retrieve KB
-  const articles = await search.searchTop(ticket.description, cls.predictedCategory);
-  await log(ticketId, traceId, 'system', 'KB_RETRIEVED', {articleIds: articles.map(a=>a._id)});
+  const KBItems = await search.searchTop(ticket.description, cls.predictedCategory);
+  await log(ticketId, traceId, 'system', 'KB_RETRIEVED', {KBItemIds: KBItems.map(a=>a._id)});
 
   // Draft
-  const draft = await ai.draft(ticket.description, articles);
+  const draft = await ai.draft(ticket.description, KBItems);
   await log(ticketId, traceId, 'system', 'DRAFT_GENERATED');
 
   const suggestion = await AgentSuggestion.create({
     ticketId,
     predictedCategory: cls.predictedCategory,
-    articleIds: articles.map(a=>a._id),
+    KBItemIds: KBItems.map(a=>a._id),
     draftReply: draft.draftReply,
     confidence: cls.confidence,
     modelInfo: { provider: process.env.STUB_MODE==='true'?'stub':'openai', promptVersion: 'v1' }
