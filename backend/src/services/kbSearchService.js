@@ -1,13 +1,25 @@
 const KBItem = require('../models/KBItem');
 
+function escapeRegex(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 exports.searchTop = async (query, category) => {
-  const q = (query||'').split(/\s+/).filter(Boolean).slice(0,5).join('|');
-  const regex = q ? new RegExp(q,'i') : /.*/;
-  const or = [{title:regex},{body:regex},{tags:regex}];
-  const filter = { status:'published', $or: or };
-  if (category && category!=='other') {
+  const terms = (query || '')
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 5)
+    .map(escapeRegex);
+  const filter = { status: 'published' };
+
+  if (terms.length) {
+    const regex = new RegExp(terms.join('|'), 'i');
+    filter.$or = [{ title: regex }, { body: regex }, { tags: regex }];
+  }
+
+  if (category && category !== 'other') {
     filter.tags = { $in: [category] };
   }
-  const results = await KBItem.find(filter).limit(3);
-  return results;
+
+  return KBItem.find(filter).sort('-updatedAt').limit(3);
 };

@@ -6,45 +6,81 @@ const Config = require('../models/Config');
 const ai = require('./aiService');
 const search = require('./kbSearchService');
 
-async function log(ticketId, traceId, actor, action, meta){
-  await AuditLog.create({ticketId, traceId, actor, action, meta});
+async function log(ticketId, traceId, actor, action, meta) {
+  await AuditLog.create({ ticketId, traceId, actor, action, meta });
 }
 
-exports.processTicket = async (ticketId)=>{
+exports.processTicket = async (ticketId) => {
   const traceId = uuidv4();
-  await log(ticketId, traceId, 'system', 'AGENT_STARTED');
   const ticket = await Ticket.findById(ticketId);
-  if (!ticket) return;
 
-  // Classify
-  const cls = await ai.classify(`${ticket.title}\n${ticket.description}`);
-  await log(ticketId, traceId, 'system', 'AGENT_CLASSIFIED', cls);
+  if (!ticket) {
+    return null;
+  }
 
-  // Retrieve KB
-  const KBItems = await search.searchTop(ticket.description, cls.predictedCategory);
-  await log(ticketId, traceId, 'system', 'KB_RETRIEVED', {KBItemIds: KBItems.map(a=>a._id)});
+  await log(ticketId, traceId, 'system', 'AGENT_STARTED');
 
-  // Draft
-  const draft = await ai.draft(ticket.description, KBItems);
-  await log(ticketId, traceId, 'system', 'DRAFT_GENERATED');
+  try {
+    const classification = await ai.classify(`${ticket.title}\n${ticket.description}`);
+    await log(ticketId, traceId, 'system', 'AGENT_CLASSIFIED', classification);
 
-  const suggestion = await AgentSuggestion.create({
-    ticketId,
-    predictedCategory: cls.predictedCategory,
-    KBItemIds: KBItems.map(a=>a._id),
-    draftReply: draft.draftReply,
-    confidence: cls.confidence,
-    modelInfo: { provider: process.env.STUB_MODE==='true'?'stub':'openai', promptVersion: 'v1' }
-  });
+    const kbItems = await search.searchTop(
+      `${ticket.title}\n${ticket.description}`,
+      classification.predictedCategory
+    );
+    await log(ticketId, traceId, 'system', 'KB_RETRIEVED', {
+      kbItemIds: kbItems.map((article) => article._id.toString()),
+    });
 
-  const cfgDoc = await Config.findOne();
-  const cfg = cfgDoc || { autoCloseEnabled:true, confidenceThreshold:0.78 };
-  if (cfg.autoCloseEnabled && cls.confidence >= cfg.confidenceThreshold){
-    await Ticket.findByIdAndUpdate(ticketId,{ status:'resolved', agentSuggestionId: suggestion._id, category: cls.predictedCategory });
-    await AgentSuggestion.findByIdAndUpdate(suggestion._id,{ autoClosed:true });
-    await log(ticketId, traceId, 'system', 'AUTO_CLOSED', {suggestionId: suggestion._id});
-  } else {
-    await Ticket.findByIdAndUpdate(ticketId,{ status:'waiting_human', agentSuggestionId: suggestion._id, category: cls.predictedCategory });
-    await log(ticketId, traceId, 'system', 'ASSIGNED_TO_HUMAN', {suggestionId: suggestion._id});
+    const draft = await ai.draft(ticket.description, kbItems);
+    await log(ticketId, traceId, 'system', 'DRAFT_GENERATED', {
+      citationCount: draft.citations?.length || 0,
+    });
+
+    const suggestion = await AgentSuggestion.findOneAndUpdate(
+      { ticketId },
+      {
+        predictedCategory: classification.predictedCategory,
+        KBItemIds: kbItems.map((article) => article._id),
+        draftReply: draft.draftReply,
+        confidence: classification.confidence,
+        modelInfo: {
+          provider: process.env.STUB_MODE === 'true' ? 'stub' : 'openai',
+          promptVersion: 'v1',
+        },
+      },
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    );
+
+    const config = (await Config.findOne()) || { autoClose: true, threshold: 0.78 };
+    const shouldAutoClose = config.autoClose && classification.confidence >= config.threshold;
+
+    await Ticket.findByIdAndUpdate(ticketId, {
+      status: shouldAutoClose ? 'resolved' : 'waiting_human',
+      category: classification.predictedCategory,
+      agentSuggestionId: suggestion._id,
+    });
+
+    await AgentSuggestion.findByIdAndUpdate(suggestion._id, {
+      autoClosed: shouldAutoClose,
+    });
+
+    await log(
+      ticketId,
+      traceId,
+      'system',
+      shouldAutoClose ? 'AUTO_CLOSED' : 'ASSIGNED_TO_HUMAN',
+      {
+        suggestionId: suggestion._id.toString(),
+        confidence: classification.confidence,
+      }
+    );
+
+    return suggestion;
+  } catch (error) {
+    await log(ticketId, traceId, 'system', 'AGENT_FAILED', {
+      message: error.message,
+    });
+    throw error;
   }
 };

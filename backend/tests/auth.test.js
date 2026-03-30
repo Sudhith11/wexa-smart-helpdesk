@@ -1,10 +1,16 @@
 const request = require('supertest');
 const mongoose = require('mongoose');
 const app = require('../server'); // just the Express app
+const { stopInMemoryServer } = require('../src/config/database');
+
+beforeAll(async () => {
+  await app.dbReady;
+});
 
 afterAll(async () => {
   // close MongoDB connection when tests finish
   await mongoose.connection.close();
+  await stopInMemoryServer();
 });
 
 describe('Auth', () => {

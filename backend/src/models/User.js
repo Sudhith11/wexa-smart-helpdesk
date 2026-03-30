@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -19,9 +19,21 @@ userSchema.pre('save', async function(next) {
   next();
 });
 
-// Verify password method
-userSchema.methods.verifyPassword = function(candidate) {
+userSchema.methods.comparePassword = function(candidate) {
   return bcrypt.compare(candidate, this.password);
+};
+
+userSchema.methods.verifyPassword = function(candidate) {
+  return this.comparePassword(candidate);
+};
+
+userSchema.methods.toSafeObject = function() {
+  return {
+    id: this._id.toString(),
+    name: this.name,
+    email: this.email,
+    role: this.role,
+  };
 };
 
 module.exports = mongoose.model('User', userSchema);

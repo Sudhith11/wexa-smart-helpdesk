@@ -1,10 +1,18 @@
 import axios from 'axios';
-const api = axios.create({ 
-  baseURL: import.meta.env.VITE_API_URL || 'https://wexa-smart-helpdesk.onrender.com/api' 
+
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL?.trim() || '/api',
+  timeout: 15000,
 });
-api.interceptors.request.use((config)=>{
+
+api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
-  if (token) config.headers.Authorization = `Bearer ${token}`;
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
   return config;
 });
+
 export default api;

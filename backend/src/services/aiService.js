@@ -23,8 +23,11 @@ class AIService {
 
   async draft(text, KBItems){
     const lines = (KBItems||[]).map((a,i)=> `${i+1}. ${a.title}`);
+    const resourceBlock = lines.length
+      ? `These may help:\n\n${lines.join('\n')}\n\n`
+      : 'Our support team is reviewing the details and will follow up with next steps.\n\n';
     return {
-      draftReply: `Thanks for reaching out. These may help:\n\n${lines.join('\n')}\n\nIf this resolves your issue, we'll close the ticket.`,
+      draftReply: `Thanks for reaching out.\n\n${resourceBlock}If this resolves your issue, we'll close the ticket.`,
       citations: (KBItems||[]).map(a=> String(a._id))
     };
   }

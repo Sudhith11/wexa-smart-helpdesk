@@ -1,81 +1,93 @@
-import { BrowserRouter, Routes, Route, Link, Navigate } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { useEffect } from 'react';
+import { Toaster } from 'react-hot-toast';
+import AppLayout from './components/AppLayout';
 import { useAuth } from './store/authStore';
 import Login from './pages/Login';
+import Register from './pages/Register';
 import Tickets from './pages/Tickets';
 import TicketDetail from './pages/TicketDetail';
 import KB from './pages/KB';
 import Settings from './pages/Settings';
-import { Toaster } from 'react-hot-toast';
+
+function LoadingScreen() {
+  return (
+    <div className="flex min-h-screen items-center justify-center px-4">
+      <div className="surface-panel w-full max-w-md rounded-[2rem] p-8 text-center">
+        <p className="text-sm font-semibold uppercase tracking-[0.24em] text-sky-700">WEXA</p>
+        <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-slate-950">
+          Smart Helpdesk
+        </h1>
+        <p className="mt-3 text-sm text-slate-600">Preparing your workspace...</p>
+      </div>
+    </div>
+  );
+}
 
 function PrivateRoute({ children }) {
-  const { token } = useAuth();
-  if (!token) return <Navigate to="/login" replace />;
+  const { token, initialized } = useAuth();
+
+  if (!initialized) {
+    return <LoadingScreen />;
+  }
+
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+
   return children;
 }
 
+function HomeRedirect() {
+  const { token, initialized } = useAuth();
+
+  if (!initialized) {
+    return <LoadingScreen />;
+  }
+
+  return <Navigate to={token ? '/tickets' : '/login'} replace />;
+}
+
 export default function App() {
-  const { token, logout, initializeAuth, isAdmin } = useAuth();
+  const { initializeAuth } = useAuth();
 
   useEffect(() => {
-    initializeAuth();
+    void initializeAuth();
   }, [initializeAuth]);
 
   return (
-    <>
-      <BrowserRouter>
-        <nav className="p-4 bg-white border-b flex items-center space-x-4">
-          <Link to="/" className="font-bold text-lg">TicketsKB</Link>
-          {token && (
-            <>
-              <Link to="/tickets" className="hover:underline">Tickets</Link>
-              {isAdmin() && (
-                <Link to="/kb" className="hover:underline">Knowledge Base</Link>
-              )}
-              <Link to="/settings" className="hover:underline">Settings</Link>
-              <button
-                onClick={() => logout()}
-                className="ml-auto text-red-600 hover:underline"
-              >
-                Logout
-              </button>
-            </>
-          )}
-        </nav>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomeRedirect />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
-        <Routes>
-          <Route path="/login" element={<Login />} />
+        <Route
+          element={
+            <PrivateRoute>
+              <AppLayout />
+            </PrivateRoute>
+          }
+        >
+          <Route path="/tickets" element={<Tickets />} />
+          <Route path="/tickets/:id" element={<TicketDetail />} />
+          <Route path="/kb" element={<KB />} />
+          <Route path="/settings" element={<Settings />} />
+        </Route>
 
-          {/* Protected Routes */}
-          <Route
-            path="/tickets"
-            element={<PrivateRoute><Tickets /></PrivateRoute>}
-          />
-          <Route
-            path="/tickets/:id"
-            element={<PrivateRoute><TicketDetail /></PrivateRoute>}
-          />
-          <Route
-            path="/kb"
-            element={<PrivateRoute><KB /></PrivateRoute>}
-          />
-          <Route
-            path="/settings"
-            element={<PrivateRoute><Settings /></PrivateRoute>}
-          />
+        <Route path="*" element={<HomeRedirect />} />
+      </Routes>
 
-          {/* Default redirect */}
-          <Route
-            path="/"
-            element={<Navigate to={token ? "/tickets" : "/login"} replace />}
-          />
-          <Route
-            path="*"
-            element={<Navigate to={token ? "/tickets" : "/login"} replace />}
-          />
-        </Routes>
-      </BrowserRouter>
-      <Toaster position="top-right" />
-    </>
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          style: {
+            borderRadius: '999px',
+            padding: '12px 16px',
+            fontWeight: 600,
+          },
+        }}
+      />
+    </BrowserRouter>
   );
 }

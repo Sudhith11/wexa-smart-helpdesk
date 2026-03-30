@@ -1,12 +1,15 @@
 const request = require('supertest');
+const mongoose = require('mongoose');
 const app = require('../server');
+const { stopInMemoryServer } = require('../src/config/database');
 
 describe('Tickets & Suggestions', () => {
   let token;
   let ticketId;
 
-  // First, register a user and get a JWT token
   beforeAll(async () => {
+    await app.dbReady;
+
     const res = await request(app)
       .post('/api/auth/register')
       .send({
@@ -14,6 +17,7 @@ describe('Tickets & Suggestions', () => {
         email: `test${Date.now()}@example.com`,
         password: 'password123'
       });
+
     token = res.body.token;
   });
 
@@ -28,7 +32,7 @@ describe('Tickets & Suggestions', () => {
 
     expect(res.status).toBe(201);
     expect(res.body._id).toBeDefined();
-    ticketId = res.body._id; // store for later
+    ticketId = res.body._id;
   });
 
   it('retrieves ticket audit logs', async () => {
@@ -49,4 +53,9 @@ describe('Tickets & Suggestions', () => {
     expect(res.body.predictedCategory).toBeDefined();
     expect(res.body.draftReply).toBeDefined();
   });
+});
+
+afterAll(async () => {
+  await mongoose.connection.close();
+  await stopInMemoryServer();
 });
