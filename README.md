@@ -1,29 +1,56 @@
 # WEXA Smart Helpdesk
 
-WEXA Smart Helpdesk is a full-stack support platform for WEXA with role-based access, AI-assisted ticket triage, knowledge base management, and an audit trail for every automated step.
+WEXA Smart Helpdesk is a full-stack support operations platform built for WEXA. It combines AI-assisted ticket triage, role-based workflows, a searchable knowledge base, and an audit trail so support teams can move from intake to resolution with more clarity and speed.
 
-## What The Project Includes
+[![Frontend on Vercel](https://img.shields.io/badge/Frontend-Vercel-111827?logo=vercel&logoColor=white)](https://wexa-smart-helpdesk.vercel.app)
+![Backend on Render](https://img.shields.io/badge/Backend-Render-4F46E5?logo=render&logoColor=white)
+![React](https://img.shields.io/badge/React-18-0EA5E9?logo=react&logoColor=white)
+![Express](https://img.shields.io/badge/Express-5-111827?logo=express&logoColor=white)
+![MongoDB](https://img.shields.io/badge/Database-MongoDB-16A34A?logo=mongodb&logoColor=white)
 
-- React + Vite frontend with a WEXA-branded dashboard
-- Node.js + Express backend with JWT authentication
-- MongoDB persistence through Mongoose
-- Automatic bootstrap of demo users, starter KB articles, and assistant settings
-- AI-style triage workflow that:
-  - classifies a ticket
-  - searches the knowledge base
-  - drafts a reply
-  - either auto-resolves or sends the ticket to human review
-- Admin settings for auto-close behavior and confidence threshold
-- Backend tests with Jest and Supertest
-- Frontend lint/build verification with Vite + ESLint
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/Sudhith11/wexa-smart-helpdesk)
 
-## Roles And Demo Accounts
+## Why This Project Stands Out
 
-The backend bootstraps these accounts automatically when the database is empty:
+- Designed as a company-ready support console instead of a toy CRUD dashboard
+- Uses AI-style ticket classification and suggestion flows with visible confidence scoring
+- Includes separate customer, agent, and admin experiences
+- Ships with a polished WEXA-branded interface, seeded demo accounts, and starter knowledge content
+- Supports both persistent MongoDB deployments and local development fallback modes
 
-- User: `user@helpdesk.com` / `user123`
-- Agent: `agent@helpdesk.com` / `agent123`
-- Admin: `admin@helpdesk.com` / `admin123`
+## Product Tour
+
+| Sign In | Ticket Detail |
+| --- | --- |
+| ![WEXA login screen](docs/screenshots/login.png) | ![WEXA ticket detail](docs/screenshots/ticket-detail.png) |
+
+| Knowledge Base | Assistant Policy |
+| --- | --- |
+| ![WEXA knowledge base](docs/screenshots/knowledge-base.png) | ![WEXA assistant settings](docs/screenshots/settings.png) |
+
+## Core Experience
+
+### Customer Flow
+
+- Sign in and create a support request
+- Let the assistant classify the issue and draft a response
+- Review the resulting ticket timeline, linked knowledge, and status
+
+### Support Flow
+
+- See the shared operations queue
+- Jump into tickets that need human review
+- Use the audit trail to understand what the assistant already did
+
+### Admin Flow
+
+- Manage knowledge base content
+- Tune the auto-close threshold
+- Control how aggressive the assistant should be in resolving tickets automatically
+
+## Architecture
+
+![WEXA architecture diagram](docs/architecture.png)
 
 ## Tech Stack
 
@@ -42,88 +69,51 @@ The backend bootstraps these accounts automatically when the database is empty:
 - Node.js
 - Express 5
 - Mongoose
-- JWT auth
+- JWT authentication
 - bcryptjs
 - Jest
 - Supertest
 
-### Database
+### Data and Operations
 
-- MongoDB Atlas for persistent data
-- In-memory MongoDB fallback for local/offline development
+- MongoDB Atlas for persistent cloud storage
+- In-memory MongoDB fallback for local or offline development
+- GitHub for source control
+- Vercel for frontend hosting
+- Render blueprint for backend deployment
 
-## Project Structure
+## Demo Accounts
 
-```text
-wexa-smart-helpdesk/
-|-- backend/
-|   |-- scripts/
-|   |-- src/
-|   |   |-- bootstrap/
-|   |   |-- config/
-|   |   |-- controllers/
-|   |   |-- middleware/
-|   |   |-- models/
-|   |   |-- routes/
-|   |   `-- services/
-|   |-- tests/
-|   `-- server.js
-|-- frontend/
-|   |-- public/
-|   |-- src/
-|   |   |-- components/
-|   |   |-- lib/
-|   |   |-- pages/
-|   |   `-- store/
-|   `-- vite.config.js
-`-- docker-compose.yml
+The backend bootstraps these accounts automatically when the database is empty:
+
+- Customer: `user@helpdesk.com` / `user123`
+- Support agent: `agent@helpdesk.com` / `agent123`
+- Admin: `admin@helpdesk.com` / `admin123`
+
+## Local Development
+
+### Software To Install
+
+- Node.js 20+
+- npm
+- Git
+- MongoDB Atlas account if you want persistent cloud data
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/Sudhith11/wexa-smart-helpdesk.git
+cd wexa-smart-helpdesk
 ```
 
-## Features
+### 2. Configure environment files
 
-### Authentication
+Create these files from the included examples:
 
-- Login and registration
-- JWT-based protected routes
-- Role-aware UI for user, agent, and admin
+- `backend/.env` from `backend/.env.example`
+- `frontend/.env` from `frontend/.env.example`
 
-### Tickets
-
-- Create support tickets
-- View ticket list and ticket detail page
-- See classification, suggestion, and current status
-- Inspect audit logs for all assistant actions
-
-### Knowledge Base
-
-- Search KB articles as an authenticated user
-- Create, edit, and delete KB articles as admin
-- Publish or save drafts
-
-### Assistant Workflow
-
-When a user creates a ticket, the backend:
-
-1. classifies the issue into `billing`, `tech`, `shipping`, or `other`
-2. finds matching KB articles
-3. drafts a suggested reply
-4. resolves the ticket automatically if confidence is high enough
-5. records each step in the audit log
-
-### Admin Controls
-
-- Toggle ticket auto-close
-- Change the confidence threshold
-
-## Environment Variables
-
-Do not commit real `.env` files. Use the example files below.
-
-### Backend
-
-Create [backend/.env](C:\Users\SUDHITH\wexa-smart-helpdesk\backend\.env) from [backend/.env.example](C:\Users\SUDHITH\wexa-smart-helpdesk\backend\.env.example).
-
-Required values:
+Backend example:
 
 ```env
 PORT=8080
@@ -131,57 +121,32 @@ MONGO_URI=mongodb://localhost:27017/wexahelpdesk
 JWT_SECRET=replace-with-a-strong-secret
 STUB_MODE=true
 ALLOW_DB_FALLBACK=true
-```
-
-Optional values:
-
-```env
 CORS_ORIGIN=http://localhost:5173,http://localhost:3000
 USE_IN_MEMORY_DB=false
 OPENAI_API_KEY=
 ```
 
-### Frontend
-
-Create [frontend/.env](C:\Users\SUDHITH\wexa-smart-helpdesk\frontend\.env) from [frontend/.env.example](C:\Users\SUDHITH\wexa-smart-helpdesk\frontend\.env.example).
+Frontend example:
 
 ```env
 VITE_API_URL=http://localhost:8080/api
 ```
 
-## Local Setup
-
-### Software To Install
-
-- Node.js 20+ or newer
-- npm
-- Git
-- MongoDB Atlas account if you want persistent cloud data
-
-### 1. Clone The Repository
-
-```bash
-git clone https://github.com/Sudhith11/wexa-smart-helpdesk.git
-cd wexa-smart-helpdesk
-```
-
-### 2. Install Backend Dependencies
+### 3. Install dependencies
 
 ```bash
 cd backend
 npm install
 ```
 
-### 3. Install Frontend Dependencies
-
 ```bash
 cd ../frontend
 npm install
 ```
 
-### 4. Start The Backend
+### 4. Run the backend
 
-From [backend](C:\Users\SUDHITH\wexa-smart-helpdesk\backend):
+From `backend/`:
 
 ```bash
 npm start
@@ -194,36 +159,61 @@ Mongo connected
 API on 8080
 ```
 
-If Atlas is not reachable, the backend falls back to an in-memory database and still starts locally.
+If Atlas is unavailable during local development, the app can still run with the in-memory fallback.
 
-### 5. Start The Frontend
+### 5. Run the frontend
 
-From [frontend](C:\Users\SUDHITH\wexa-smart-helpdesk\frontend):
+From `frontend/`:
 
 ```bash
 npm run dev
 ```
 
-Open:
+Open [http://localhost:5173](http://localhost:5173).
 
-- `http://localhost:5173`
+## Deployment Setup
 
-## Verification Commands
+### Frontend on Vercel
 
-### Frontend
+The frontend is already configured for Vercel in `frontend/vercel.json`.
 
-From [frontend](C:\Users\SUDHITH\wexa-smart-helpdesk\frontend):
+- Framework: Vite
+- Root directory: `frontend`
+- Production behavior: `/api/*` requests are proxied to the Render backend
+- Frontend auto-deploys when you push changes to GitHub
+
+### Backend on Render
+
+The repo now includes a Render Blueprint at `render.yaml`.
+
+- Service name: `wexa-smart-helpdesk-api`
+- Runtime: Node
+- Root directory: `backend`
+- Build command: `npm install`
+- Start command: `npm start`
+- Health check: `/healthz`
+- `JWT_SECRET` is generated automatically by Render
+- `MONGO_URI` stays unsynced so you can set your own MongoDB Atlas connection securely
+
+Important:
+
+- The production proxy in `frontend/vercel.json` expects the Render backend URL to be `https://wexa-smart-helpdesk-api.onrender.com`
+- If Render gives you a different service URL, update `frontend/vercel.json` and redeploy the Vercel frontend
+
+## Quality Checks
+
+Frontend:
 
 ```bash
+cd frontend
 npm run lint
 npm run build
 ```
 
-### Backend
-
-From [backend](C:\Users\SUDHITH\wexa-smart-helpdesk\backend):
+Backend:
 
 ```bash
+cd backend
 npm test
 ```
 
@@ -241,7 +231,7 @@ Services:
 - Backend: `http://localhost:8080`
 - MongoDB: `mongodb://localhost:27017`
 
-## API Summary
+## API Surface
 
 ### Auth
 
@@ -265,41 +255,14 @@ Services:
 - `PUT /api/kb/:id`
 - `DELETE /api/kb/:id`
 
-### Assistant
+### Assistant Controls
 
 - `GET /api/agent/suggestion/:ticketId`
 - `GET /api/agent/config`
 - `PUT /api/agent/config`
 
-## Current Behavior Notes
+## Notes
 
-- If MongoDB Atlas is unavailable, the backend can use an in-memory fallback database
-- Default users and KB content are created automatically on an empty database
-- Frontend routing is protected by JWT auth
-- Admin settings are stored in the database, not hardcoded in the frontend
-
-## Deployment Notes
-
-### Frontend
-
-- Build command: `npm run build`
-- Output directory: `dist`
-- Set `VITE_API_URL` to your deployed backend URL
-
-### Backend
-
-- Start command: `npm start`
-- Set a real `MONGO_URI`
-- Set a strong `JWT_SECRET`
-- Set `CORS_ORIGIN` to your frontend domain
-
-## GitHub Hygiene
-
-This repo now ignores:
-
-- `node_modules`
-- `dist`
-- `.env`
-- local log files
-
-Real secrets should stay only in local `.env` files or your hosting platform environment settings.
+- Real secrets should stay in local `.env` files or hosting platform environment settings
+- If you deploy on Render with a different subdomain, update the Vercel API rewrite destination accordingly
+- The app seeds default users, starter KB articles, and assistant settings automatically on an empty database
