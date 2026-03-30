@@ -48,10 +48,6 @@ WEXA Smart Helpdesk is a full-stack support operations platform built for WEXA. 
 - Tune the auto-close threshold
 - Control how aggressive the assistant should be in resolving tickets automatically
 
-## Architecture
-
-![WEXA architecture diagram](docs/architecture.png)
-
 ## Tech Stack
 
 ### Frontend
