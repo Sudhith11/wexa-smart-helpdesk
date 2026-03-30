@@ -170,8 +170,6 @@ npm test     # or npx vitest
 4. **Support Agents** can view AI suggestions and manage ticket responses
 5. **Complete audit trail** visible for all ticket activities
 
-**🚀 Live Application:** https://ppl-ai-code-interpreter-files.s3.amazonaws.com/web/direct-files/e33524121d27dd517f5dc4b9e8293bdd/efad572c-a2d2-4316-a313-844bd007abe2/index.html
-
 ***
 
 ## Technical Implementation
